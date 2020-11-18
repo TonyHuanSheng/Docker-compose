@@ -1,0 +1,110 @@
+version: '2' #版本
+services: #伺服器
+  flask-chatbot.pri: #自己建立的images
+    build:  
+      context: . #放dockerfile路徑
+      dockerfile: dockerfile
+    container_name: flask-chatbot #容器名 相對於 --name <名字>
+    ports: #(host port: continer port)
+      - "5000:5000"
+    environment: #環境設置 會自動讀取.env文件 將需要的鑰匙放入.env內
+      line_channel_access_token: '${line_channel_access_token}'
+      line_channel_secret: '${line_channel_secret}'
+      TZ: 'Asia/Taipei'
+    volumes: # 掛載建立的 資料夾
+      - .:/app
+    command: python kafka_welcome_linebot.py #執行app目錄下的檔案
+    depends_on: #啟動此容器前先啟動容器的先決條件
+      - mysql
+      - redis
+    networks: #每個容器互相訪問的網路
+      - es7net
+
+  ngrok-temp: #
+    image: wernight/ngrok #網路掛載的image
+    container_name: ngrok #容器名 相對於 --name <名字>
+    ports: #(host port: continer port)
+      - "4040:4040"
+    environment: # NGROK_PORT:(continer name:post)
+      NGROK_AUTH: '${NGROK_AUTH}'
+      NGROK_USERNAME: '${NGROK_USERNAME}'
+      NGROK_PASSWORD: '${NGROK_PASSWORD}'
+      NGROK_PORT: flask-chatbot.pri:5000 
+      NGROK_REGION: 'ap'
+      TZ: 'Asia/Taipei'
+    depends_on: #啟動此容器前先啟動容器的先決條件
+      - flask-chatbot.pri
+    networks: #每個容器互相訪問的網路
+      - es7net
+
+  mysql:
+    image: mysql:8.0 #image:版本號
+    container_name: mysql
+    hostname: mysql
+    command: --default-authentication-plugin=mysql_native_password #新版讀取密碼
+    ports:
+      - "3307:3306" #防止本地環境互搶port
+    environment:
+      - TZ=Asia/Taipei
+      - MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'
+    volumes: #掛載 (host 相對路徑: continer 相對路徑)
+      - ./data/mysql_db/mysql_data:/var/lib/mysql #資料儲存的路徑
+      - ./data/mysql_init:/docker-entrypoint-initdb.d/
+    networks:
+      - es7net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.1
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment: 
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000  #2000ms 
+    depends_on:
+      - flask-chatbot.pri
+    networks:
+      - es7net
+    
+  kafka: #zookeeper是kafka的中控台
+    image: confluentinc/cp-kafka:5.2.1
+    hostname: kafka
+    container_name: kafka
+    ports: #9092 對外網 29092 對內網
+      - '9092:9092'
+      - '29092:29092'
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      ## for local use
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      ## for public use
+      #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://<host_ip>:9092
+      #advertised.host.name: <host_ip>
+    networks:
+      - es7net
+
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: redis
+    hostname: redis
+    restart: always #重新啟動 :隨時
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD='${REDIS_PASSWORD}'
+    volumes:
+      # 
+      - ./data/redis/data:/usr/share/redis/data
+    networks:
+      - es7net
+networks:
+  es7net:
+
+
