@@ -140,6 +140,7 @@ services: #伺服器
     environment:
       - REDIS_PASSWORD='${REDIS_PASSWORD}'
     volumes:
+      # HOST:CONTAINER
       - ./data/redis/data:/usr/share/redis/data
     networks:
       - es7net
