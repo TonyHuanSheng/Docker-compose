@@ -137,7 +137,7 @@ services: #伺服器
     networks:
       - es7net
 networks:
-  es7net:
+  es7net: #內網設定
 
 ```
 # Dockerfile
