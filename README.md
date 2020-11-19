@@ -12,6 +12,7 @@
 docker-compose.yml 也就是組態設定文件，是一種 yaml 格式撰寫的文件，可以上維基看一下 YAML 格式說明，比較需要注意的是他的縮排規定要空白鍵，而不是 tab。
 
 ## Docker Compose 是一個工具可以讓你可以透過一個指令就可以控制所有專案（project）中所需要的 services。
+### 基礎模板
 ```
 version: '3'  # 目前使用的版本，可以參考官網：
 services:  # services 關鍵字後面列出 web, redis 兩項專案中的服務
@@ -27,7 +28,7 @@ services:  # services 關鍵字後面列出 web, redis 兩項專案中的服務
     image: redis # 從 redis image build 出 container
 ```
 
-
+### 撰寫yml檔
 ```
 version: '2' #版本
 services: #伺服器
