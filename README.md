@@ -1,7 +1,7 @@
 # Docker-compose
 ### 參考網頁: https://blog.techbridge.cc/2018/09/07/docker-compose-tutorial-intro/
 ### 參考網頁: https://blog.maxkit.com.tw/2017/03/docker-compose.html
-### 參考網頁: https://ithelp.ithome.com.tw/articles/10191139
+
 
 ## 使用 Compose 有基本的三個處理步驟：
 
@@ -27,17 +27,7 @@ services:  # services 關鍵字後面列出 web, redis 兩項專案中的服務
     image: redis # 從 redis image build 出 container
 ```
 
-### 事實上 Dockerfile 是用來描述映像檔（image）的文件。
 
-```
-# 這是一個創建 ubuntu 並安裝 nginx 的 image
-FROM ubuntu:16.04 # 從 Docker hub 下載基礎的 image，可能是作業系統環境或是程式語言環境，這邊是 ubuntu 16.04
-MAINTAINER demo@gmail.com # 維護者
-
-RUN apt-get update # 執行 CMD 指令跑的指令，更新 apt 套件包資訊
-RUN apt-get install –y nginx # 執行 CMD 指令跑的指令，安裝 nginx
-CMD ["echo", "Nginx Image created"]
-```
 ```
 version: '2' #版本
 services: #伺服器
@@ -148,4 +138,18 @@ services: #伺服器
 networks:
   es7net:
 
+```
+# Dockerfile
+
+### 參考網頁: https://ithelp.ithome.com.tw/articles/10191139
+### 事實上 Dockerfile 是用來描述映像檔（image）的文件。
+
+```
+# 這是一個創建 ubuntu 並安裝 nginx 的 image
+FROM ubuntu:16.04 # 從 Docker hub 下載基礎的 image，可能是作業系統環境或是程式語言環境，這邊是 ubuntu 16.04
+MAINTAINER demo@gmail.com # 維護者
+
+RUN apt-get update # 執行 CMD 指令跑的指令，更新 apt 套件包資訊
+RUN apt-get install –y nginx # 執行 CMD 指令跑的指令，安裝 nginx
+CMD ["echo", "Nginx Image created"]
 ```
