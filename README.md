@@ -154,3 +154,30 @@ RUN apt-get update # 執行 CMD 指令跑的指令，更新 apt 套件包資訊
 RUN apt-get install –y nginx # 執行 CMD 指令跑的指令，安裝 nginx
 CMD ["echo", "Nginx Image created"]
 ```
+### 參考網頁:http://www.w3big.com/zh-TW/docker/docker-install-mysql.html
+### Docker Mysql
+#### (1)
+創建目錄mysql,用於存放後面的相關東西。
+1. mkdir -p ~/mysql/data ~/mysql/logs ~/mysql/conf
+data目錄將映射為mysql容器配置的數據文件存放路徑
+
+logs目錄將映射為mysql容器的日誌目錄
+
+conf目錄裡的配置文件將映射為mysql容器的配置文件
+
+進入創建的mysql目錄，創建Dockerfile
+2. cd mysql
+3. touch Dockerfile
+
+#### (2)
+
+1.docker search mysql
+2.docker pull mysql:8.0
+3.docker run -p 3306:3306 --name mymysql -v $PWD/conf/my.cnf:/etc/mysql/my.cnf -v $PWD/logs:/logs -v $PWD/data:/mysql_data -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.6
+命令說明：
+
+-p 3306:3306：將容器的3306端口映射到主機的3306端口
+-v $PWD/conf/my.cnf:/etc/mysql/my.cnf：將主機當前目錄下的conf/my.cnf掛載到容器的/etc/mysql/my.cnf
+-v $PWD/logs:/logs：將主機當前目錄下的logs目錄掛載到容器的/logs
+-v $PWD/data:/mysql_data：將主機當前目錄下的data目錄掛載到容器的/mysql_data
+-e MYSQL_ROOT_PASSWORD=123456：初始化root用戶的密碼
