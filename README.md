@@ -1,7 +1,8 @@
 # Docker-compose
 ### 參考網頁: https://blog.techbridge.cc/2018/09/07/docker-compose-tutorial-intro/
 ### 參考網頁: https://blog.maxkit.com.tw/2017/03/docker-compose.html
-
+### 安裝Docker-compose
+官方指令: https://docs.docker.com/compose/install/
 
 ## 使用 Compose 有基本的三個處理步驟：
 
